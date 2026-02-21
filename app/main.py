@@ -33,9 +33,14 @@ USUARIOS = [
 class LoginRequest(BaseModel):
     email: str
     password: str
-    
+
+# Bases para endpoints de página ResetPassword   
 class EmailRequest(BaseModel):
     email: str
+
+class codeRequest(BaseModel):
+    email: str
+    code: str
 
 class ResetPasswordRequest(BaseModel):
     email: str
@@ -124,6 +129,15 @@ def solicitar_codigo(req: EmailRequest):
 
     return {"success": True, "message": "Código generado y enviado"}
 
+@app.post("/verificar-codigo")
+def verificar_codigo(req: codeRequest):
+    if req.email in CODIGOS_RECUPERACION and req.code in CODIGOS_RECUPERACION.values():
+        return{
+            "success": True,
+            "message": "Código verificado."
+        }
+    raise HTTPException(status_code=404, detail="Código incorrecto")
+
 @app.post("/cambiar-password")
 def cambiar_password(req: ResetPasswordRequest):
     for user in USUARIOS:
@@ -133,5 +147,5 @@ def cambiar_password(req: ResetPasswordRequest):
             if req.email in CODIGOS_RECUPERACION:
                 del CODIGOS_RECUPERACION[req.email]
             return {"success": True, "message": "Contraseña actualizada con éxito"}
-    
+        
     raise HTTPException(status_code=404, detail="Usuario no encontrado")
