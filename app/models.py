@@ -1,10 +1,13 @@
-from sqlalchemy import Column, String, Float, Date, Boolean
+from sqlalchemy import UUID, Column, ForeignKey, String, Float, Date, Boolean
 from app.database import Base
 import uuid
 
 class Egreso(Base):
     __tablename__ = "Egreso" 
 
+    usuario_id = Column(
+        UUID(as_uuid=True), 
+        ForeignKey("Usuario.usuario_id"))
     id = Column(
         String(36),
         primary_key=True,

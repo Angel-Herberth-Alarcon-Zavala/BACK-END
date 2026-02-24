@@ -11,9 +11,9 @@ router = APIRouter(
     prefix="/egresos", 
     tags=["Egresos"])
 
-@router.get("/")
-def get_egresos(db: Session = Depends(get_db)):
-    lista_egresos = db.query(Egreso).all()
+@router.get("/{usuario_id}")
+def obtener_egresos_usuario(usuario_id: uuid.UUID, db: Session = Depends(get_db)):
+    lista_egresos = db.query(Egreso).filter(Egreso.usuario_id == usuario_id).all()
     return lista_egresos
 
 @router.post("/")
@@ -22,7 +22,8 @@ def crear_egreso(datos: EgresoCreate, db: Session = Depends(get_db)):
         fecha=datos.fecha,
         descripcion=datos.descripcion,
         monto=datos.monto,
-        categoria=datos.categoria
+        categoria=datos.categoria,
+        usuario_id=datos.usuario_id
     )
 
     db.add(nuevo_egreso)

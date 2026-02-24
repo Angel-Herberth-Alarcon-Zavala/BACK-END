@@ -1,3 +1,4 @@
+from uuid import UUID
 from pydantic import BaseModel
 from datetime import date
 
@@ -22,6 +23,8 @@ class EgresoCreate(BaseModel):
     descripcion: str
     monto: float
     categoria: str
+    usuario_id: UUID
+    
 class EgresoUpdate(BaseModel):
     fecha: date | None = None
     descripcion: str | None = None
