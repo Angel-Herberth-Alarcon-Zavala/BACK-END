@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+import uuid
 
 # Imports de routers y base de datos
 from app.database import get_db
@@ -16,6 +17,37 @@ def get_egresos(db: Session = Depends(get_db)):
     return lista_egresos
 
 @router.put("/{egreso_id}")
-def edit_egreso(egreso_id: str, db: Session = Depends(get_db)):
-    pass
+def editar_egreso(egreso_id: uuid.UUID, datos: EgresoUpdate, db: Session = Depends(get_db)):
 
+    egreso_existente = db.query(EgresosList).filter(EgresosList.id == egreso_id).first()
+    
+    if not egreso_existente:
+        raise HTTPException(status_code=404, detail="Egreso no encontrado")
+    
+    if datos.fecha is not None:
+        egreso_existente.fecha = datos.fecha
+    if datos.descripcion is not None:
+        egreso_existente.descripcion = datos.descripcion
+    if datos.monto is not None:
+        egreso_existente.monto = datos.monto
+    if datos.categoria is not None:
+        egreso_existente.categoria = datos.categoria
+        
+    db.commit()
+    db.refresh(egreso_existente)
+    
+    return egreso_existente
+
+# ===== ENDPOINT PARA ELIMINAR (DELETE) =====
+@router.delete("/{egreso_id}")
+def eliminar_egreso(egreso_id: uuid.UUID, db: Session = Depends(get_db)):
+
+    egreso_existente = db.query(EgresosList).filter(EgresosList.id == egreso_id).first()
+    
+    if not egreso_existente:
+        raise HTTPException(status_code=404, detail="Egreso no encontrado")
+    
+    db.delete(egreso_existente)
+    db.commit()
+    
+    return {"success": True, "message": "Egreso eliminado permanentemente"}
