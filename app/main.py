@@ -1,11 +1,9 @@
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse
-import bcrypt
 # Imports de routers y base de datos
-from .routers import resetPassword, egresos
-from app.schemas import LoginRequest
 from app.database import get_db
 from app.models import Usuario
 
@@ -21,6 +19,10 @@ app.add_middleware(
 @app.get("/")
 def root():
     return RedirectResponse(url="/docs")
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 
 # Inicio de sesión
 @app.post("/login")
@@ -39,6 +41,8 @@ async def login(login_request : LoginRequest, db : Session = Depends(get_db)):
     return {
         "msg" : "Acceso concedido"
     }
+
+
 """
 @app.post("/login")
 def login(user_req: LoginRequest):
@@ -58,5 +62,3 @@ def login(user_req: LoginRequest):
         status_code=401, 
         detail="Correo o contraseña incorrectos")
 """
-app.include_router(resetPassword.router)
-app.include_router(egresos.router)

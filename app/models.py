@@ -15,7 +15,6 @@ class Usuario(Base):
 
 class Egreso(Base):
     __tablename__ = "Egreso" 
-
     id = Column(
         String(36),
         primary_key=True,

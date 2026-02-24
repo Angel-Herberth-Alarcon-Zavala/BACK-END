@@ -3,6 +3,7 @@ from datetime import date
 
 # Login (main)
 class LoginRequest(BaseModel):
+    id: str
     username: str
     password: str
 
