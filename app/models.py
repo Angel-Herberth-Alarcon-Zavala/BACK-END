@@ -2,8 +2,8 @@ from sqlalchemy import Column, String, Float, Date
 from app.database import Base
 import uuid
 
-class EgresosList(Base):
-    __tablename__ = "egresos" 
+class Egreso(Base):
+    __tablename__ = "Egreso" 
 
     id = Column(
         String(36),

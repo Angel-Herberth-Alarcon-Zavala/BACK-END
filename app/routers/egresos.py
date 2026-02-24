@@ -4,8 +4,8 @@ import uuid
 
 # Imports de routers y base de datos
 from app.database import get_db
-from app.models import EgresosList
-from app.schemas import EgresoUpdate
+from app.models import Egreso
+from app.schemas import EgresoCreate, EgresoUpdate
 
 router = APIRouter(
     prefix="/egresos", 
@@ -13,13 +13,28 @@ router = APIRouter(
 
 @router.get("/")
 def get_egresos(db: Session = Depends(get_db)):
-    lista_egresos = db.query(EgresosList).all()
+    lista_egresos = db.query(Egreso).all()
     return lista_egresos
+
+@router.post("/")
+def crear_egreso(datos: EgresoCreate, db: Session = Depends(get_db)):
+    nuevo_egreso = Egreso(
+        fecha=datos.fecha,
+        descripcion=datos.descripcion,
+        monto=datos.monto,
+        categoria=datos.categoria
+    )
+
+    db.add(nuevo_egreso)
+    db.commit()
+    db.refresh(nuevo_egreso)
+
+    return nuevo_egreso
 
 @router.put("/{egreso_id}")
 def editar_egreso(egreso_id: uuid.UUID, datos: EgresoUpdate, db: Session = Depends(get_db)):
 
-    egreso_existente = db.query(EgresosList).filter(EgresosList.id == egreso_id).first()
+    egreso_existente = db.query(Egreso).filter(Egreso.id == egreso_id).first()
     
     if not egreso_existente:
         raise HTTPException(status_code=404, detail="Egreso no encontrado")
@@ -38,11 +53,10 @@ def editar_egreso(egreso_id: uuid.UUID, datos: EgresoUpdate, db: Session = Depen
     
     return egreso_existente
 
-# ===== ENDPOINT PARA ELIMINAR (DELETE) =====
 @router.delete("/{egreso_id}")
-def eliminar_egreso(egreso_id: uuid.UUID, db: Session = Depends(get_db)):
+def eliminar_egreso(egreso_id: uuid.uuid4, db: Session = Depends(get_db)):
 
-    egreso_existente = db.query(EgresosList).filter(EgresosList.id == egreso_id).first()
+    egreso_existente = db.query(Egreso).filter(Egreso.id == egreso_id).first()
     
     if not egreso_existente:
         raise HTTPException(status_code=404, detail="Egreso no encontrado")

@@ -17,6 +17,11 @@ class ResetPasswordRequest(BaseModel):
     nuevo_password: str
 
 # Consulta individual o en lista de egresos (egresos)
+class EgresoCreate(BaseModel):
+    fecha: date
+    descripcion: str
+    monto: float
+    categoria: str
 class EgresoUpdate(BaseModel):
     fecha: date | None = None
     descripcion: str | None = None
