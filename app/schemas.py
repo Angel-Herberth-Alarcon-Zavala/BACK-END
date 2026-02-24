@@ -3,7 +3,7 @@ from datetime import date
 
 # Login (main)
 class LoginRequest(BaseModel):
-    email: str
+    username: str
     password: str
 
 # Confirmación para cambio de contraseña (resetPassword)

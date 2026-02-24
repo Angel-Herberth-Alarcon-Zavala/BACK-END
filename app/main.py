@@ -1,12 +1,13 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse
-
+import bcrypt
 # Imports de routers y base de datos
 from .routers import resetPassword, egresos
 from app.schemas import LoginRequest
-from app.database import get_db, USUARIOS
+from app.database import get_db
+from app.models import Usuario
 
 # Aplicación FastAPI
 app = FastAPI()
@@ -22,6 +23,23 @@ def root():
     return RedirectResponse(url="/docs")
 
 # Inicio de sesión
+@app.post("/login")
+async def login(login_request : LoginRequest, db : Session = Depends(get_db)):
+    usuario = db.query(Usuario).filter(
+        Usuario.username == login_request.username,
+        Usuario.password == login_request.password
+    ).first()
+
+    if not usuario:
+        raise HTTPException(
+            status_code=400, 
+            detail="Error en login, credenciales incorrectas")
+
+
+    return {
+        "msg" : "Acceso concedido"
+    }
+"""
 @app.post("/login")
 def login(user_req: LoginRequest):
     for user in USUARIOS:
@@ -39,6 +57,6 @@ def login(user_req: LoginRequest):
     raise HTTPException(
         status_code=401, 
         detail="Correo o contraseña incorrectos")
-
+"""
 app.include_router(resetPassword.router)
 app.include_router(egresos.router)

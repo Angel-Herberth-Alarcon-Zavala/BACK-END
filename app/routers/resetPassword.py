@@ -6,7 +6,7 @@ import random
 import smtplib
 
 # Imports de routers y base de datos
-from app.database import get_db, USUARIOS, CODIGOS_RECUPERACION
+from app.database import get_db
 from app.schemas import EmailRequest, codeRequest, ResetPasswordRequest
 
 router = APIRouter(
