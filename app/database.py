@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Falta dirección real de base de datos
-CADENA_CONEXION = "postgresql://videojuegos:videojuegos@localhost:5432/bd_videojuegos"
+CADENA_CONEXION = "postgresql://admin:admin@localhost:5432/bd_backend"
 
 engine = create_engine(CADENA_CONEXION)
 session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
