@@ -1,13 +1,15 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse
-from .routers import resetPassword
-from app.database import USUARIOS, CODIGOS_RECUPERACION
 
+# Imports de routers y base de datos
+from .routers import resetPassword, egresos
+from app.schemas import LoginRequest
+from app.database import get_db, USUARIOS
+
+# Aplicación FastAPI
 app = FastAPI()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,16 +17,11 @@ app.add_middleware(
     allow_headers=["*"],
     #allow_credentials=True
 )
-
-
-class LoginRequest(BaseModel):
-    email: str
-    password: str
-
 @app.get("/")
 def root():
     return RedirectResponse(url="/docs")
 
+# Inicio de sesión
 @app.post("/login")
 def login(user_req: LoginRequest):
     for user in USUARIOS:
@@ -44,3 +41,4 @@ def login(user_req: LoginRequest):
         detail="Correo o contraseña incorrectos")
 
 app.include_router(resetPassword.router)
+app.include_router(egresos.router)

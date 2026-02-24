@@ -1,25 +1,18 @@
+from fastapi import APIRouter, HTTPException
+
+# Librerías para envío de correo
 from email.message import EmailMessage
 import random
 import smtplib
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from app.database import USUARIOS, CODIGOS_RECUPERACION
+
+# Imports de routers y base de datos
+from app.database import get_db, USUARIOS, CODIGOS_RECUPERACION
+from app.schemas import EmailRequest, codeRequest, ResetPasswordRequest
 
 router = APIRouter(
-    prefix="/auth",
-    tags=["resetPass"]
+    prefix="/reset-password",
+    tags=["ResetPassword"]
 )
-
-class EmailRequest(BaseModel):
-    email: str
-
-class codeRequest(BaseModel):
-    email: str
-    code: str
-
-class ResetPasswordRequest(BaseModel):
-    email: str
-    nuevo_password: str
 
 def enviar_correo_html(destinatario: str, codigo: str):
     REMITENTE = "tu_correo@gmail.com" 
