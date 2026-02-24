@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
 # Librerías para envío de correo
 from email.message import EmailMessage
@@ -6,7 +7,8 @@ import random
 import smtplib
 
 # Imports de routers y base de datos
-from app.database import get_db, USUARIOS, CODIGOS_RECUPERACION
+from app.database import get_db, CODIGOS_RECUPERACION
+from app.models import Usuario
 from app.schemas import EmailRequest, codeRequest, ResetPasswordRequest
 
 router = APIRouter(
@@ -59,8 +61,8 @@ def enviar_correo_html(destinatario: str, codigo: str):
         return False
 
 @router.post("/solicitar-codigo")
-def solicitar_codigo(req: EmailRequest):
-    usuario_existe = any(u["email"] == req.email for u in USUARIOS)
+def solicitar_codigo(req: EmailRequest, db: Session = Depends(get_db)):
+    usuario_existe = db.query(Usuario).filter(Usuario.email == req.email).first()
     if not usuario_existe:
         raise HTTPException(status_code=404, detail="Correo no encontrado en el sistema")
 
@@ -76,8 +78,9 @@ def solicitar_codigo(req: EmailRequest):
     return {"success": True, "message": "Código generado y enviado"}
 
 @router.post("/verificar-codigo")
-def verificar_codigo(req: codeRequest):
-    if req.email in CODIGOS_RECUPERACION and req.code in CODIGOS_RECUPERACION.values():
+def verificar_codigo(req: codeRequest, db: Session = Depends(get_db)):
+    usuario_existe = db.query(Usuario).filter(Usuario.email == req.email).first()
+    if usuario_existe.email in CODIGOS_RECUPERACION and req.code in CODIGOS_RECUPERACION.values():
         return{
             "success": True,
             "message": "Código verificado."
@@ -85,13 +88,14 @@ def verificar_codigo(req: codeRequest):
     raise HTTPException(status_code=404, detail="Código incorrecto")
 
 @router.post("/cambiar-password")
-def cambiar_password(req: ResetPasswordRequest):
-    for user in USUARIOS:
-        if user["email"] == req.email:
-            user["password"] = req.nuevo_password
+def cambiar_password(req: ResetPasswordRequest, db: Session = Depends(get_db)):
+    usuario_existe = db.query(Usuario).filter(Usuario.email == req.email).first()
+    
+    if not usuario_existe:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-            if req.email in CODIGOS_RECUPERACION:
-                del CODIGOS_RECUPERACION[req.email]
-            return {"success": True, "message": "Contraseña actualizada con éxito"}
-        
-    raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    usuario_existe.password = req.nuevo_password
+    db.commit()
+    del CODIGOS_RECUPERACION[usuario_existe.email]
+    return {"success": True, "message": "Contraseña actualizada con éxito"}
+    

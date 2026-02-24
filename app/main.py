@@ -1,12 +1,15 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse
 
+
+
 # Imports de routers y base de datos
 from .routers import resetPassword, egresos
 from app.schemas import LoginRequest
-from app.database import get_db, USUARIOS
+from app.models import Usuario
+from app.database import get_db
 
 # Aplicación FastAPI
 app = FastAPI()
@@ -23,22 +26,23 @@ def root():
 
 # Inicio de sesión
 @app.post("/login")
-def login(user_req: LoginRequest):
-    for user in USUARIOS:
-        if user["email"] == user_req.email and user["password"] == user_req.password:
-            return {
-                "msg": True,
-                "data": {
-                    "id": user["id"],
-                    "username": user["username"],
-                    "email": user["email"],
-                    "role": user["role"],
-                    "verified": user["verified"]
-                }
-            }
-    raise HTTPException(
-        status_code=401, 
-        detail="Correo o contraseña incorrectos")
-
+def login(user_req: LoginRequest, db: Session = Depends(get_db)):
+    usuario_encontrado = db.query(Usuario).filter(Usuario.email == user_req.email).first()
+    
+    if not usuario_encontrado or usuario_encontrado.password != user_req.password:
+        raise HTTPException(status_code=404, detail="Correo o contraseña incorrectos.")
+    
+    return {
+        "success": True,
+        "message": "Login exitoso",
+        "user": {
+            "id": usuario_encontrado.usuario_id,
+            "email": usuario_encontrado.email,
+            "role": usuario_encontrado.role,
+            "username": usuario_encontrado.username,
+            "verified": usuario_encontrado.verified
+        }
+    }
+    
 app.include_router(resetPassword.router)
 app.include_router(egresos.router)
