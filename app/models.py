@@ -13,8 +13,8 @@ class Usuario(Base):
     username = Column(String, unique=True)
     password = Column(String, unique=True)
 
-class Egreso(Base):
-    __tablename__ = "Egreso" 
+class egreso(Base):
+    __tablename__ = "egreso" 
     id = Column(
         String(36),
         primary_key=True,
