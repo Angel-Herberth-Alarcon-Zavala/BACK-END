@@ -14,7 +14,7 @@ class Usuario(Base):
     password = Column(String, unique=True)
 
 class Egreso(Base):
-    __tablename__ = "Egreso" 
+    __tablename__ = "egreso" 
     id = Column(
         String(36),
         primary_key=True,
