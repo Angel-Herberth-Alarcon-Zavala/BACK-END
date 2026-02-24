@@ -54,7 +54,7 @@ def editar_egreso(egreso_id: uuid.UUID, datos: EgresoUpdate, db: Session = Depen
     return egreso_existente
 
 @router.delete("/{egreso_id}")
-def eliminar_egreso(egreso_id: uuid.uuid4, db: Session = Depends(get_db)):
+def eliminar_egreso(egreso_id: uuid.UUID, db: Session = Depends(get_db)):
 
     egreso_existente = db.query(Egreso).filter(Egreso.id == egreso_id).first()
     
