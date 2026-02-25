@@ -2,11 +2,8 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse
-
 from app import schemas
 from app import models
-
-
 
 # Imports de routers y base de datos
 from .routers import resetPassword, egresos, usuarios
