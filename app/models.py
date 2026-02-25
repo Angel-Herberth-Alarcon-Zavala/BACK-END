@@ -5,7 +5,7 @@ from app.database import Base
 from sqlalchemy.orm import relationship
 
 class Usuario(Base):
-    __tablename__ = "usuario"
+    __tablename__ = "Usuario"
 
     id = Column(
         UUID(as_uuid=True), 
@@ -31,7 +31,7 @@ class Egreso(Base):
     )
     usuario_id = Column(
         UUID(as_uuid=True), 
-        ForeignKey("usuario.id"), 
+        ForeignKey("Usuario.id"), 
         nullable=False
     )
     fecha = Column(Date, nullable=False)

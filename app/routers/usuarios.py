@@ -44,7 +44,7 @@ def crear_usuario(datos: UsuarioCreate, db: Session = Depends(get_db)):
 
 @router.put("/{usuario_id}")
 def editar_usuario(usuario_id: uuid.UUID, datos: UsuarioUpdate, db: Session = Depends(get_db)):
-    usuario_db = db.query(Usuario).filter(Usuario.usuario_id == usuario_id).first()
+    usuario_db = db.query(Usuario).filter(Usuario.id == usuario_id).first()
     if not usuario_db:
         raise HTTPException(
             status_code=404,
