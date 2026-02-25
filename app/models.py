@@ -3,7 +3,7 @@ from app.database import Base
 import uuid
 
 class Egreso(Base):
-    __tablename__ = "Egreso" 
+    __tablename__ = "egreso" 
 
     usuario_id = Column(
         UUID(as_uuid=True), 
@@ -19,7 +19,7 @@ class Egreso(Base):
     categoria = Column(String)
 
 class Usuario(Base):
-    __tablename__ = "Usuario"
+    __tablename__ = "usuario"
 
     usuario_id = Column(
         String(36),
