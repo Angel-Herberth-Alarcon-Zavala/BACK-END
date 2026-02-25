@@ -2,11 +2,12 @@ import uuid
 from sqlalchemy import Column, String, Float, Date, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID 
 from app.database import Base
+from sqlalchemy.orm import relationship
 
 class Usuario(Base):
     __tablename__ = "usuario"
 
-    usuario_id = Column(
+    id = Column(
         UUID(as_uuid=True), 
         primary_key=True, 
         default=uuid.uuid4, 
@@ -17,9 +18,10 @@ class Usuario(Base):
     password = Column(String, nullable=False)
     role = Column(String, default="user")
     verified = Column(Boolean, default=False)
+    egreso = relationship("Egreso", back_populates="usuario")
 
 class Egreso(Base):
-    __tablename__ = "Egreso"
+    __tablename__ = "egreso"
 
     id = Column(
         UUID(as_uuid=True), 
@@ -29,10 +31,11 @@ class Egreso(Base):
     )
     usuario_id = Column(
         UUID(as_uuid=True), 
-        ForeignKey("Usuario.usuario_id"), 
+        ForeignKey("usuario.id"), 
         nullable=False
     )
     fecha = Column(Date, nullable=False)
     descripcion = Column(String)
     monto = Column(Float, nullable=False)
     categoria = Column(String)
+    usuario = relationship("Usuario", back_populates="egreso")

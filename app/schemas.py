@@ -24,7 +24,7 @@ class UsuarioCreate(BaseModel):
     password: str
 
 class UsuarioResponse(BaseModel):
-    usuario_id: UUID 
+    id: UUID 
     username: str
     email: str
     verified: bool

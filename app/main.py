@@ -36,7 +36,7 @@ def login(user_req: LoginRequest, db: Session = Depends(get_db)):
         "success": True,
         "message": "Login exitoso",
         "user": {
-            "id": usuario_encontrado.usuario_id, 
+            "id": usuario_encontrado.id, 
             "username": usuario_encontrado.username,
             "email": usuario_encontrado.email,
             "role": usuario_encontrado.role,
