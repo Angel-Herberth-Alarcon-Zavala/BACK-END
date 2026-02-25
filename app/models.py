@@ -21,7 +21,7 @@ class Usuario(Base):
     egreso = relationship("Egreso", back_populates="usuario")
 
 class Egreso(Base):
-    __tablename__ = "egreso"
+    __tablename__ = "Egreso"
 
     id = Column(
         UUID(as_uuid=True), 

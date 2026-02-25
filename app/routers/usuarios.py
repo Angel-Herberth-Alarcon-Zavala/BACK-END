@@ -65,7 +65,7 @@ def editar_usuario(usuario_id: uuid.UUID, datos: UsuarioUpdate, db: Session = De
 @router.delete("/{usuario_id}")
 def eliminar_usuario(usuario_id: uuid.UUID, db: Session = Depends(get_db)):
 
-    usuario_db = db.query(Usuario).filter(Usuario.usuario_id == usuario_id).first()
+    usuario_db = db.query(Usuario).filter(Usuario.id == usuario_id).first()
     if not usuario_db:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
         
