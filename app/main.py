@@ -3,10 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse
 
-
-
 # Imports de routers y base de datos
-from .routers import resetPassword, egresos
+from .routers import resetPassword, egresos, usuarios
 from app.schemas import LoginRequest
 from app.models import Usuario
 from app.database import get_db
@@ -46,3 +44,4 @@ def login(user_req: LoginRequest, db: Session = Depends(get_db)):
     
 app.include_router(resetPassword.router)
 app.include_router(egresos.router)
+app.include_router(usuarios.router)
