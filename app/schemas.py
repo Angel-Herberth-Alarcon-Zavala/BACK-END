@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel
 from datetime import date
@@ -44,6 +45,19 @@ class EgresoUpdate(BaseModel):
     descripcion: str | None = None
     monto: float | None = None
     categoria: str | None = None
+
+class GastoCreate(BaseModel):
+    usuario_id: int
+    categoria: str
+    descripcion: Optional[str] = None
+    monto: float
+    fecha: date
+
+class GastoOut(GastoCreate):
+    id: int
+
+    class Config:
+        from_attributes = True
 
 class EgresoResponse(BaseModel):
     id: UUID 

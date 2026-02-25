@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, Float, Date, Boolean, ForeignKey
+from sqlalchemy import Column, String, Float, Date, Boolean, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import UUID 
 from app.database import Base
 from sqlalchemy.orm import relationship
@@ -39,3 +39,13 @@ class Egreso(Base):
     monto = Column(Float, nullable=False)
     categoria = Column(String)
     usuario = relationship("Usuario", back_populates="egreso")
+
+class Gasto(Base):
+    _tablename_ = "gastos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    usuario_id = Column(Integer, ForeignKey("usuarios.id"))
+    categoria = Column(String)
+    descripcion = Column(String)
+    monto = Column(Float)
+    fecha = Column(Date)
