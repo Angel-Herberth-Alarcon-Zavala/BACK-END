@@ -2,8 +2,14 @@ from fastapi_mail import ConnectionConfig
 import os
 from dotenv import load_dotenv
 
+
 # Esto carga las variables del archivo .env a la memoria del sistema
 load_dotenv()
+
+print("MAIL_USERNAME:", os.getenv("MAIL_USERNAME"))
+print("MAIL_PASSWORD:", os.getenv("MAIL_PASSWORD"))
+print("MAIL_FROM:", os.getenv("MAIL_FROM"))
+print("DATABASE_URL:", os.getenv("DATABASE_URL"))
 
 conf = ConnectionConfig(
     # REEMPLAZAMOS LOS TEXTOS POR os.getenv
