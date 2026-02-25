@@ -3,8 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse
 
-
-
 # Imports de routers y base de datos
 from .routers import resetPassword, egresos, usuarios
 from app.schemas import LoginRequest
