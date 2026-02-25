@@ -1,3 +1,10 @@
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from fastapi.responses import FileResponse
+import os
+from fastapi.responses import StreamingResponse
+import csv
+from io import StringIO
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 import uuid
@@ -66,3 +73,59 @@ def eliminar_egreso(egreso_id: uuid.UUID, db: Session = Depends(get_db)):
     db.commit()
     
     return {"success": True, "message": "Egreso eliminado permanentemente"}
+#exportar csv
+@router.get("/export/csv/{usuario_id}")
+def exportar_egresos_csv(usuario_id: uuid.UUID, db: Session = Depends(get_db)):
+
+    egresos = db.query(Egreso).filter(Egreso.usuario_id == usuario_id).all()
+
+    if not egresos:
+        raise HTTPException(status_code=404, detail="No hay egresos para exportar")
+
+    output = StringIO()
+    writer = csv.writer(output)
+
+    # Cabeceras
+    writer.writerow(["Fecha", "Descripcion", "Monto", "Categoria"])
+
+    # Filas
+    for e in egresos:
+        writer.writerow([e.fecha, e.descripcion, e.monto, e.categoria])
+
+    output.seek(0)
+
+    return StreamingResponse(
+        output,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=egresos.csv"}
+    )
+
+#exportar pdf
+@router.get("/export/pdf/{usuario_id}")
+def exportar_egresos_pdf(usuario_id: uuid.UUID, db: Session = Depends(get_db)):
+
+    egresos = db.query(Egreso).filter(Egreso.usuario_id == usuario_id).all()
+
+    if not egresos:
+        raise HTTPException(status_code=404, detail="No hay egresos para exportar")
+
+    filename = f"egresos_{usuario_id}.pdf"
+    filepath = f"/tmp/{filename}"
+
+    c = canvas.Canvas(filepath, pagesize=letter)
+    y = 750
+
+    c.drawString(100, y, "Reporte de Egresos")
+    y -= 30
+
+    for e in egresos:
+        texto = f"{e.fecha} | {e.descripcion} | {e.monto} | {e.categoria}"
+        c.drawString(50, y, texto)
+        y -= 20
+        if y < 50:
+            c.showPage()
+            y = 750
+
+    c.save()
+
+    return FileResponse(filepath, filename=filename)
