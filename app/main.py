@@ -6,7 +6,7 @@ from fastapi.responses import RedirectResponse
 
 
 # Imports de routers y base de datos
-from .routers import resetPassword, egresos
+from .routers import resetPassword, egresos, usuarios
 from app.schemas import LoginRequest
 from app.models import Usuario
 from app.database import get_db
@@ -36,13 +36,14 @@ def login(user_req: LoginRequest, db: Session = Depends(get_db)):
         "success": True,
         "message": "Login exitoso",
         "user": {
-            "id": usuario_encontrado.usuario_id,
+            "id": usuario_encontrado.usuario_id, 
+            "username": usuario_encontrado.username,
             "email": usuario_encontrado.email,
             "role": usuario_encontrado.role,
-            "username": usuario_encontrado.username,
             "verified": usuario_encontrado.verified
         }
     }
     
 app.include_router(resetPassword.router)
 app.include_router(egresos.router)
+app.include_router(usuarios.router)

@@ -1,3 +1,4 @@
+from typing import List
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from fastapi.responses import FileResponse
@@ -12,15 +13,18 @@ import uuid
 # Imports de routers y base de datos
 from app.database import get_db
 from app.models import Egreso
-from app.schemas import EgresoCreate, EgresoUpdate
+from app.schemas import EgresoCreate, EgresoUpdate, EgresoResponse
 
 router = APIRouter(
     prefix="/egresos", 
     tags=["Egresos"])
 
-@router.get("/{usuario_id}")
+@router.get("/{usuario_id}", response_model=List[EgresoResponse])
 def obtener_egresos_usuario(usuario_id: uuid.UUID, db: Session = Depends(get_db)):
-    lista_egresos = db.query(Egreso).filter(Egreso.usuario_id == usuario_id).all()
+    lista_egresos = db.query(Egreso)\
+                      .filter(Egreso.usuario_id == usuario_id)\
+                      .order_by(Egreso.fecha.desc())\
+                      .all()
     return lista_egresos
 
 @router.post("/")
@@ -110,7 +114,7 @@ def exportar_egresos_pdf(usuario_id: uuid.UUID, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="No hay egresos para exportar")
 
     filename = f"egresos_{usuario_id}.pdf"
-    filepath = f"/tmp/{filename}"
+    filepath = os.path.join(os.getcwd(), filename)
 
     c = canvas.Canvas(filepath, pagesize=letter)
     y = 750
