@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse
 from app import schemas
 from app import models
+from app.routers import presupuestos
 
 # Imports de routers y base de datos
 from .routers import resetPassword, egresos, usuarios
@@ -43,20 +44,8 @@ def login(user_req: LoginRequest, db: Session = Depends(get_db)):
             "verified": usuario_encontrado.verified
         }
     }
-
-@app.post("/gastos/")
-def crear_gasto(gasto_data: schemas.GastoCreate, db: Session = Depends(get_db)):
-    nuevo_gasto = models.Gasto(
-        usuario_id=gasto_data.usuario_id,
-        categoria=gasto_data.categoria,
-        monto=gasto_data.monto,
-        fecha=gasto_data.fecha
-    )
-    db.add(nuevo_gasto)
-    db.commit()
-    db.refresh(nuevo_gasto)
-    return nuevo_gasto
     
 app.include_router(resetPassword.router)
 app.include_router(egresos.router)
 app.include_router(usuarios.router)
+app.include_router(presupuestos.router)

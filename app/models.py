@@ -40,12 +40,15 @@ class Egreso(Base):
     categoria = Column(String)
     usuario = relationship("Usuario", back_populates="egreso")
 
-class Gasto(Base):
-    _tablename_ = "gastos"
+class Presupuesto(Base):
+    __tablename__ = "Presupuesto"
 
-    id = Column(Integer, primary_key=True, index=True)
-    usuario_id = Column(Integer, ForeignKey("usuarios.id"))
+    id = Column(UUID(as_uuid=True), 
+        primary_key=True, 
+        default=uuid.uuid4, 
+        index=True)
+    usuario_id = Column(UUID(as_uuid=True), 
+        ForeignKey("Usuario.id"), 
+        nullable=False)
     categoria = Column(String)
-    descripcion = Column(String)
-    monto = Column(Float)
-    fecha = Column(Date)
+    monto_limite = Column(Float)

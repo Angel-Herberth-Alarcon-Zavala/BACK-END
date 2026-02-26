@@ -71,15 +71,12 @@ class EgresoResponse(BaseModel):
     class Config:
         from_attributes = True
 
-class GastoCreate(BaseModel):
-    usuario_id: int
+class PresupuestoCreate(BaseModel):
+    usuario_id: UUID
     categoria: str
-    descripcion: Optional[str] = None
-    monto: float
-    fecha: date
+    monto_limite: float
 
-class GastoOut(GastoCreate):
-    id: int
-
+class PresupuestoOut(PresupuestoCreate):
+    id: UUID
     class Config:
         from_attributes = True
